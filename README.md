@@ -23,3 +23,7 @@ Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.
 Add .devcontainer with devcontainer.json and Dockerfile and then:
 
 ng new appName --directory ./
+
+## Fake api
+
+https://jsonplaceholder.typicode.com/
