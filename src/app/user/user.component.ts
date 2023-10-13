@@ -17,11 +17,13 @@ export class UserComponent {
 
   constructor(private readonly userService: UserService) {}
 
-  delete = () => {
+  add = (user: Partial<User>): void => this.userService.add(user);
+
+  delete = (): void => {
     if (!this.selectedUser) return;
     this.userService.delete(this.selectedUser.id);
     this.selectedUser = undefined;
   };
 
-  selectUser = (user: User) => (this.selectedUser = user);
+  selectUser = (user: User): User => (this.selectedUser = user);
 }

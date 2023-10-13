@@ -6,9 +6,19 @@
   >
     Show Add
   </button>
-  <button class="btn btn-primary w-24" (click)="delete()">Delete</button>
+  <button
+    class="btn btn-warning w-24"
+    (click)="delete()"
+    [disabled]="!selectedUser"
+  >
+    Delete
+  </button>
 
-  <app-add-user *ngIf="addUserFormOpen" class="mr-5"></app-add-user>
+  <app-user-add
+    *ngIf="addUserFormOpen"
+    class="mr-5"
+    (onSave)="add($event)"
+  ></app-user-add>
 
   <div class="overflow-x-auto">
     <table class="table">
