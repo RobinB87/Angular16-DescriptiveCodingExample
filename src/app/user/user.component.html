@@ -1,7 +1,21 @@
-<p>Users:</p>
-<ul *ngIf="users$ | async as users">
-  <li *ngFor="let user of users">
-    {{ user.id }}
-    {{ user.name }}
-  </li>
-</ul>
+<h1>Users</h1>
+
+<div class="overflow-x-auto">
+  <table class="table">
+    <!-- head -->
+    <thead>
+      <tr>
+        <th></th>
+        <th>Name</th>
+        <th>Email</th>
+      </tr>
+    </thead>
+    <tbody *ngIf="users$ | async as users">
+      <tr *ngFor="let user of users">
+        <th>{{ user.id }}</th>
+        <td>{{ user.name }}</td>
+        <td>{{ user.email }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
