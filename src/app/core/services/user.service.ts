@@ -23,16 +23,20 @@ export class UserService {
     this.userDelete$
   );
 
+  private highestUserId: number = 0;
+
   constructor(private readonly httpClient: HttpClient) {}
 
   get(): Observable<User[]> {
     return this.httpClient.get<User[]>(`${this.api}`);
   }
 
-  add(user?: User): void {
-    const userToAdd = user ? user : this.createFakeUser();
-    this.httpClient.post<User>(`${this.api}`, userToAdd).subscribe({
-      next: () => this.userAddSubject.next(userToAdd),
+  add(user: Partial<User>): void {
+    this.httpClient.post<User>(`${this.api}`, user).subscribe({
+      next: () => {
+        this.highestUserId += 1;
+        this.userAddSubject.next({ ...user, id: this.highestUserId } as User);
+      },
       error: (err) => console.log('e', err),
     });
   }
@@ -54,6 +58,7 @@ export class UserService {
     return merge(users$, userAdd$, userDelete$).pipe(
       scan((acc, value) => {
         if (value instanceof Array) {
+          this.highestUserId = this.getHighestUserId(value);
           acc = [...value];
         } else if (typeof value === 'number') {
           acc = acc.filter((x) => x.id !== value);
@@ -65,11 +70,7 @@ export class UserService {
     );
   }
 
-  private createFakeUser(): User {
-    return {
-      id: 11,
-      name: 'Johnyboi',
-      email: 'bla@bla.com',
-    } as User;
+  private getHighestUserId(value: User[]): number {
+    return value.reduce((maxId, user) => Math.max(maxId, user.id), 0);
   }
 }
