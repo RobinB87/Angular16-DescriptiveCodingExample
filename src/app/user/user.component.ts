@@ -10,9 +10,10 @@ import { User } from '../core/models/user';
   styleUrls: ['./user.component.scss'],
 })
 export class UserComponent {
-  users$: Observable<User[]> = this.userService.usersWithAdd$;
+  users$: Observable<User[]> = this.userService.usersWithAddAndDelete$;
 
   constructor(private readonly userService: UserService) {}
 
   add = () => this.userService.add();
+  delete = (id: number) => this.userService.delete(id);
 }
