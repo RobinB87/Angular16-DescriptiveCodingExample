@@ -17,23 +17,7 @@ export class UserService {
   userDelete$: Observable<number> = this.deleteUserSubject.asObservable();
 
   private users$: Observable<User[]> = this.get();
-  usersWithAddAndDelete$: Observable<User[]> = merge(
-    this.users$,
-    this.userAdd$,
-    this.userDelete$
-  ).pipe(
-    scan((acc, value) => {
-      if (value instanceof Array) {
-        acc = [...value];
-      } else if (typeof value === 'number') {
-        acc = acc.filter((x) => x.id !== value);
-      } else {
-        acc = [...acc, value];
-      }
-
-      return acc;
-    }, [] as User[])
-  );
+  usersWithAddAndDelete$: Observable<User[]> = this.mergeUserOperations();
 
   constructor(private readonly httpClient: HttpClient) {}
 
@@ -47,6 +31,22 @@ export class UserService {
 
   delete(id: number): void {
     this.deleteUserSubject.next(id);
+  }
+
+  private mergeUserOperations(): Observable<User[]> {
+    return merge(this.users$, this.userAdd$, this.userDelete$).pipe(
+      scan((acc, value) => {
+        if (value instanceof Array) {
+          acc = [...value];
+        } else if (typeof value === 'number') {
+          acc = acc.filter((x) => x.id !== value);
+        } else {
+          acc = [...acc, value];
+        }
+
+        return acc;
+      }, [] as User[])
+    );
   }
 
   private createFakeUser(): User {
