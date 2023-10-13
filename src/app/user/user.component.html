@@ -1,7 +1,7 @@
 <div class="ml-5">
   <h1>Users</h1>
   <button class="btn btn-neutral w-20 mr-1" (click)="add()">Add</button>
-  <button class="btn btn-primary w-20" (click)="delete(7)">Delete</button>
+  <button class="btn btn-primary w-20" (click)="delete()">Delete</button>
 
   <div class="overflow-x-auto">
     <table class="table">
@@ -14,7 +14,11 @@
         </tr>
       </thead>
       <tbody *ngIf="users$ | async as users">
-        <tr *ngFor="let user of users">
+        <tr
+          *ngFor="let user of users"
+          [class]="{ 'bg-base-200': user === selectedUser }"
+          (click)="selectUser(user)"
+        >
           <th>{{ user.id }}</th>
           <td>{{ user.name }}</td>
           <td>{{ user.email }}</td>
