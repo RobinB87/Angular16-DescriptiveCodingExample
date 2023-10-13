@@ -10,14 +10,14 @@ import { User } from '../models/user';
 export class UserService {
   private api: string = 'https://jsonplaceholder.typicode.com';
 
-  private userAddSubject: Subject<User> = new Subject();
-  userAdd$: Observable<User> = this.userAddSubject.asObservable();
-
-  private deleteUserSubject: Subject<number> = new Subject();
-  userDelete$: Observable<number> = this.deleteUserSubject.asObservable();
+  usersWithAddAndDelete$: Observable<User[]> = this.mergeUserOperations();
 
   private users$: Observable<User[]> = this.get();
-  usersWithAddAndDelete$: Observable<User[]> = this.mergeUserOperations();
+  private userAddSubject: Subject<User> = new Subject();
+  private userAdd$: Observable<User> = this.userAddSubject.asObservable();
+  private deleteUserSubject: Subject<number> = new Subject();
+  private userDelete$: Observable<number> =
+    this.deleteUserSubject.asObservable();
 
   constructor(private readonly httpClient: HttpClient) {}
 
