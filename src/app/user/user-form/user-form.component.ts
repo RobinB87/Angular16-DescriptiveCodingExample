@@ -9,11 +9,11 @@ import {
 import { User } from 'src/app/core/models/user';
 
 @Component({
-  selector: 'app-user-add',
-  templateUrl: './user-add.component.html',
-  styleUrls: ['./user-add.component.scss'],
+  selector: 'user-form',
+  templateUrl: './user-form.component.html',
+  styleUrls: ['./user-form.component.scss'],
 })
-export class UserAddComponent {
+export class UserFormComponent {
   @Output() onSave: EventEmitter<Partial<User>> = new EventEmitter();
 
   form: FormGroup = this.initialiseForm();

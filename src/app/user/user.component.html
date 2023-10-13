@@ -14,11 +14,11 @@
     Delete
   </button>
 
-  <app-user-add
+  <user-form
     *ngIf="addUserFormOpen"
     class="mr-5"
     (onSave)="add($event)"
-  ></app-user-add>
+  ></user-form>
 
   <div class="overflow-x-auto">
     <table class="table">

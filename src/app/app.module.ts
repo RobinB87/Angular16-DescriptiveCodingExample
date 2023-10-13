@@ -6,10 +6,10 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { UserComponent } from './user/user.component';
-import { UserAddComponent } from './user/user-add/user-add.component';
+import { UserFormComponent } from './user/user-form/user-form.component';
 
 @NgModule({
-  declarations: [AppComponent, UserComponent, UserAddComponent],
+  declarations: [AppComponent, UserComponent, UserFormComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,
