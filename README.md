@@ -27,3 +27,16 @@ ng new appName --directory ./
 ## Fake api
 
 https://jsonplaceholder.typicode.com/
+
+## Tailwind CSS and Daisy UI
+
+npm install -D tailwindcss daisyui
+npx tailwindcss init
+
+plugins: [require("daisyui")],
+update the tailwind.config.js to your preferences
+
+add at least this to styles.scss / css:
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
