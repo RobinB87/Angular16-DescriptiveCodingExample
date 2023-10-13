@@ -21,7 +21,6 @@ export class UserAddComponent {
   constructor(private readonly formBuilder: FormBuilder) {}
 
   save(): void {
-    console.log('form', this.form);
     if (!this.form.valid) return;
     this.onSave.emit(this.form.value as Partial<User>);
   }
