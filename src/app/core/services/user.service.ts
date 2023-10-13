@@ -8,7 +8,7 @@ import { User } from '../models/user';
   providedIn: 'root',
 })
 export class UserService {
-  private api: string = 'https://jsonplaceholder.typicode.com';
+  private api: string = 'https://jsonplaceholder.typicode.com/users';
 
   private users$: Observable<User[]> = this.get();
   private userAddSubject: Subject<User> = new Subject();
@@ -26,16 +26,25 @@ export class UserService {
   constructor(private readonly httpClient: HttpClient) {}
 
   get(): Observable<User[]> {
-    return this.httpClient.get<User[]>(`${this.api}/users`);
+    return this.httpClient.get<User[]>(`${this.api}`);
   }
 
   add(user?: User): void {
-    this.userAddSubject.next(user ? user : this.createFakeUser());
+    const userToAdd = user ? user : this.createFakeUser();
+    this.httpClient.post<User>(`${this.api}`, userToAdd).subscribe({
+      next: () => this.userAddSubject.next(userToAdd),
+      error: (err) => console.log('e', err),
+    });
   }
 
   delete(id: number): void {
-    this.deleteUserSubject.next(id);
+    this.httpClient.delete(`${this.api}/${id}`).subscribe({
+      next: () => this.deleteUserSubject.next(id),
+      error: (err) => console.log('e', err),
+    });
   }
+
+  // TODO: patch / put
 
   private mergeAndScanUserOperations(
     users$: Observable<User[]>,
