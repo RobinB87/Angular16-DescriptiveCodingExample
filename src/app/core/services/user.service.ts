@@ -10,14 +10,18 @@ import { User } from '../models/user';
 export class UserService {
   private api: string = 'https://jsonplaceholder.typicode.com';
 
-  usersWithAddAndDelete$: Observable<User[]> = this.mergeUserOperations();
-
   private users$: Observable<User[]> = this.get();
   private userAddSubject: Subject<User> = new Subject();
   private userAdd$: Observable<User> = this.userAddSubject.asObservable();
   private deleteUserSubject: Subject<number> = new Subject();
   private userDelete$: Observable<number> =
     this.deleteUserSubject.asObservable();
+
+  usersWithAddAndDelete$: Observable<User[]> = this.mergeAndScanUserOperations(
+    this.users$,
+    this.userAdd$,
+    this.userDelete$
+  );
 
   constructor(private readonly httpClient: HttpClient) {}
 
@@ -33,8 +37,12 @@ export class UserService {
     this.deleteUserSubject.next(id);
   }
 
-  private mergeUserOperations(): Observable<User[]> {
-    return merge(this.users$, this.userAdd$, this.userDelete$).pipe(
+  private mergeAndScanUserOperations(
+    users$: Observable<User[]>,
+    userAdd$: Observable<User>,
+    userDelete$: Observable<number>
+  ): Observable<User[]> {
+    return merge(users$, userAdd$, userDelete$).pipe(
       scan((acc, value) => {
         if (value instanceof Array) {
           acc = [...value];
@@ -43,7 +51,6 @@ export class UserService {
         } else {
           acc = [...acc, value];
         }
-
         return acc;
       }, [] as User[])
     );
