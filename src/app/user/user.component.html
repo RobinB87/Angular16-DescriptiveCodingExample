@@ -1,11 +1,17 @@
 <div class="ml-5">
   <h1>Users</h1>
-  <button class="btn btn-neutral w-20 mr-1" (click)="add()">Add</button>
-  <button class="btn btn-primary w-20" (click)="delete()">Delete</button>
+  <button
+    class="btn btn-neutral w-24 mr-1"
+    (click)="addUserFormOpen = !addUserFormOpen"
+  >
+    Show Add
+  </button>
+  <button class="btn btn-primary w-24" (click)="delete()">Delete</button>
+
+  <app-add-user *ngIf="addUserFormOpen" class="mr-5"></app-add-user>
 
   <div class="overflow-x-auto">
     <table class="table">
-      <!-- head -->
       <thead>
         <tr>
           <th></th>

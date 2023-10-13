@@ -12,15 +12,15 @@ import { User } from '../core/models/user';
 export class UserComponent {
   users$: Observable<User[]> = this.userService.usersWithAddAndDelete$;
 
-  selectedUser: User | null = null;
+  selectedUser?: User;
+  addUserFormOpen: boolean = false;
 
   constructor(private readonly userService: UserService) {}
 
-  add = () => this.userService.add();
   delete = () => {
     if (!this.selectedUser) return;
     this.userService.delete(this.selectedUser.id);
-    this.selectedUser = null;
+    this.selectedUser = undefined;
   };
 
   selectUser = (user: User) => (this.selectedUser = user);
