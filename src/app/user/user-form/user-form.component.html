@@ -1,4 +1,4 @@
-<ng-container *ngIf="form$ | async as form">
+<div *ngIf="form$ | async as form" class="w-60">
   <h3>Simple add form</h3>
   <form [formGroup]="form">
     <div class="form-control w-full max-w-xs">
@@ -24,7 +24,13 @@
       />
     </div>
 
-    <button class="btn btn-primary" (click)="save(form)">Save</button>
-    <button class="btn btn-warning" (click)="cancel()">Cancel</button>
+    <div class="flex place-content-end mt-3">
+      <button type="button" class="btn btn-primary mr-3" (click)="save(form)">
+        Save
+      </button>
+      <button type="button" class="btn btn-warning" (click)="cancel()">
+        Cancel
+      </button>
+    </div>
   </form>
-</ng-container>
+</div>
