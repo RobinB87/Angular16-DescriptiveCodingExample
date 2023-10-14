@@ -39,6 +39,7 @@ export class UserService {
     this.userDelete$
   );
 
+  /* Note: maintaining an id is normally handled by db obviously and not stored in frontend */
   private highestUserId: number = 0;
 
   constructor(private readonly httpClient: HttpClient) {}
@@ -47,6 +48,7 @@ export class UserService {
     return this.httpClient.get<User[]>(`${this.api}`);
   }
 
+  /* Note: the fake api does not work with edit of a newly created object */
   addOrEdit(user: Partial<User>): void {
     const userAddEdit: User = (
       user.id ? user : { ...user, id: this.highestUserId + 1 }
@@ -86,7 +88,6 @@ export class UserService {
   ): Observable<User[]> {
     return merge(users$, userAdd$, userDelete$).pipe(
       scan((acc, value) => {
-        console.log('in scan: ', acc, value);
         if (value instanceof Array) {
           acc = [...value];
         } else if (typeof value === 'number') {
