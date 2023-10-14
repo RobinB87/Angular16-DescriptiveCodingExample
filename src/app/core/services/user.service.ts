@@ -39,7 +39,7 @@ export class UserService {
     this.userDelete$
   );
 
-  /* Note: maintaining an id is normally handled by db obviously and not stored in frontend */
+  /* maintaining an id is normally handled by db obviously and not stored in frontend */
   private highestUserId: number = 0;
 
   constructor(private readonly httpClient: HttpClient) {}
@@ -48,8 +48,12 @@ export class UserService {
     return this.httpClient.get<User[]>(`${this.api}`);
   }
 
-  /* Note: the fake api does not work with edit of a newly created object */
   addOrEdit(user: Partial<User>): void {
+    if (user.id && user.id > 10) {
+      console.error('fake api does not support edit of new objects');
+      return;
+    }
+
     const userAddEdit: User = (
       user.id ? user : { ...user, id: this.highestUserId + 1 }
     ) as User;
