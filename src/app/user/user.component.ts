@@ -17,7 +17,6 @@ export class UserComponent {
 
   constructor(private readonly userService: UserService) {}
 
-  selectUser = (user: User): void => this.userService.selectUser(user);
   delete = (userId: number): void => this.userService.delete(userId);
 
   openUserForm = (user?: User): void => {
