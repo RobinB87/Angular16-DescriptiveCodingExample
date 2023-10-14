@@ -11,19 +11,17 @@ import { User } from '../core/models/user';
 })
 export class UserComponent {
   users$: Observable<User[]> = this.userService.usersWithAddAndDelete$;
+  selectedUser$: Observable<User | null> = this.userService.selectedUser$;
 
-  selectedUser?: User;
-  addUserFormOpen: boolean = false;
+  userFormOpen: boolean = false;
 
   constructor(private readonly userService: UserService) {}
 
-  add = (user: Partial<User>): void => this.userService.add(user);
+  selectUser = (user: User): void => this.userService.selectUser(user);
+  delete = (userId: number): void => this.userService.delete(userId);
 
-  delete = (): void => {
-    if (!this.selectedUser) return;
-    this.userService.delete(this.selectedUser.id);
-    this.selectedUser = undefined;
+  openUserForm = (user?: User): void => {
+    this.userFormOpen = true;
+    this.userService.selectUser(user ?? null);
   };
-
-  selectUser = (user: User): User => (this.selectedUser = user);
 }

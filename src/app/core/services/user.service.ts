@@ -1,8 +1,17 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, Subject, merge, scan } from 'rxjs';
+import {
+  BehaviorSubject,
+  Observable,
+  Subject,
+  finalize,
+  map,
+  merge,
+  scan,
+} from 'rxjs';
 
 import { User } from '../models/user';
+import { addOrReplaceItemInArray } from '../util/array-util';
 
 @Injectable({
   providedIn: 'root',
@@ -11,11 +20,18 @@ export class UserService {
   private api: string = 'https://jsonplaceholder.typicode.com/users';
 
   private users$: Observable<User[]> = this.get();
-  private userAddSubject: Subject<User> = new Subject();
-  private userAdd$: Observable<User> = this.userAddSubject.asObservable();
-  private deleteUserSubject: Subject<number> = new Subject();
+
+  private selectedUserSubject: BehaviorSubject<User | null> =
+    new BehaviorSubject<User | null>(null);
+  selectedUser$: Observable<User | null> =
+    this.selectedUserSubject.asObservable();
+
+  private userAddOrEditSubject: Subject<User> = new Subject();
+  private userAdd$: Observable<User> = this.userAddOrEditSubject.asObservable();
+
+  private userDeleteSubject: Subject<number> = new Subject();
   private userDelete$: Observable<number> =
-    this.deleteUserSubject.asObservable();
+    this.userDeleteSubject.asObservable();
 
   usersWithAddAndDelete$: Observable<User[]> = this.mergeAndScanUserOperations(
     this.users$,
@@ -31,24 +47,37 @@ export class UserService {
     return this.httpClient.get<User[]>(`${this.api}`);
   }
 
-  add(user: Partial<User>): void {
-    this.httpClient.post<User>(`${this.api}`, user).subscribe({
-      next: () => {
-        this.highestUserId += 1;
-        this.userAddSubject.next({ ...user, id: this.highestUserId } as User);
-      },
+  addOrEdit(user: Partial<User>): void {
+    const userAddEdit: User = (
+      user.id ? user : { ...user, id: this.highestUserId + 1 }
+    ) as User;
+
+    const method$ = user.id
+      ? this.httpClient.put<User>(`${this.api}/${user.id}`, user)
+      : this.httpClient.post<User>(`${this.api}`, user);
+
+    method$.subscribe({
+      next: () => this.userAddOrEditSubject.next(userAddEdit),
       error: (err) => console.log('e', err),
     });
   }
 
-  delete(id: number): void {
-    this.httpClient.delete(`${this.api}/${id}`).subscribe({
-      next: () => this.deleteUserSubject.next(id),
-      error: (err) => console.log('e', err),
-    });
+  delete(userId: number): void {
+    this.httpClient
+      .delete(`${this.api}/${userId}`)
+      .pipe(
+        map(() => userId),
+        finalize(() => this.selectedUserSubject.next(null))
+      )
+      .subscribe({
+        next: (userId) => this.userDeleteSubject.next(userId),
+        error: (err) => console.log('e', err),
+      });
   }
 
-  // TODO: patch / put
+  selectUser(user: User | null): void {
+    this.selectedUserSubject.next(user);
+  }
 
   private mergeAndScanUserOperations(
     users$: Observable<User[]>,
@@ -57,14 +86,16 @@ export class UserService {
   ): Observable<User[]> {
     return merge(users$, userAdd$, userDelete$).pipe(
       scan((acc, value) => {
+        console.log('in scan: ', acc, value);
         if (value instanceof Array) {
-          this.highestUserId = this.getHighestUserId(value);
           acc = [...value];
         } else if (typeof value === 'number') {
           acc = acc.filter((x) => x.id !== value);
         } else {
-          acc = [...acc, value];
+          acc = addOrReplaceItemInArray(acc, value);
         }
+
+        this.highestUserId = this.getHighestUserId(acc);
         return acc;
       }, [] as User[])
     );

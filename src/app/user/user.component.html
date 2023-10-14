@@ -1,24 +1,24 @@
-<div class="ml-5">
-  <h1>Users</h1>
-  <button
-    class="btn btn-neutral w-24 mr-1"
-    (click)="addUserFormOpen = !addUserFormOpen"
-  >
-    Show Add
-  </button>
-  <button
-    class="btn btn-warning w-24"
-    (click)="delete()"
-    [disabled]="!selectedUser"
-  >
-    Delete
-  </button>
+<ng-container *ngIf="{ selectedUser: selectedUser$ | async } as obs">
+  <div class="ml-3">
+    <h1>Users</h1>
+    <button class="btn btn-neutral w-24 mr-3" (click)="openUserForm()">
+      Add
+    </button>
+    <button
+      class="btn btn-warning w-24"
+      [disabled]="!obs.selectedUser"
+      (click)="delete(obs.selectedUser!.id)"
+    >
+      Delete
+    </button>
+  </div>
 
-  <user-form
-    *ngIf="addUserFormOpen"
-    class="mr-5"
-    (onSave)="add($event)"
-  ></user-form>
+  <div class="mt-3 ml-3">
+    <user-form
+      *ngIf="userFormOpen"
+      (onCancel)="this.userFormOpen = false"
+    ></user-form>
+  </div>
 
   <div class="overflow-x-auto">
     <table class="table">
@@ -32,14 +32,30 @@
       <tbody *ngIf="users$ | async as users">
         <tr
           *ngFor="let user of users"
-          [class]="{ 'bg-base-200': user === selectedUser }"
+          [class]="{ 'bg-base-200': user === obs.selectedUser }"
           (click)="selectUser(user)"
         >
           <th>{{ user.id }}</th>
           <td>{{ user.name }}</td>
           <td>{{ user.email }}</td>
+          <button class="btn btn-circle" (click)="openUserForm(user)">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-4 h-4"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"
+              />
+            </svg>
+          </button>
         </tr>
       </tbody>
     </table>
   </div>
-</div>
+</ng-container>

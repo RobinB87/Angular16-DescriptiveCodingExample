@@ -1,27 +1,30 @@
-<h3>Simple add form</h3>
-<form [formGroup]="form">
-  <div class="form-control w-full max-w-xs">
-    <label class="label">
-      <span class="label-text">Name</span>
-    </label>
-    <input
-      type="text"
-      placeholder="Enter name"
-      class="input input-bordered w-full max-w-xs"
-      formControlName="name"
-    />
-  </div>
-  <div class="form-control w-full max-w-xs">
-    <label class="label">
-      <span class="label-text">Email</span>
-    </label>
-    <input
-      type="text"
-      placeholder="Enter email"
-      class="input input-bordered w-full max-w-xs"
-      formControlName="email"
-    />
-  </div>
+<ng-container *ngIf="form$ | async as form">
+  <h3>Simple add form</h3>
+  <form [formGroup]="form">
+    <div class="form-control w-full max-w-xs">
+      <label class="label">
+        <span class="label-text">Name</span>
+      </label>
+      <input
+        type="text"
+        placeholder="Enter name"
+        class="input input-bordered w-full max-w-xs"
+        formControlName="name"
+      />
+    </div>
+    <div class="form-control w-full max-w-xs">
+      <label class="label">
+        <span class="label-text">Email</span>
+      </label>
+      <input
+        type="text"
+        placeholder="Enter email"
+        class="input input-bordered w-full max-w-xs"
+        formControlName="email"
+      />
+    </div>
 
-  <button class="btn btn-primary" (click)="save()">Save</button>
-</form>
+    <button class="btn btn-primary" (click)="save(form)">Save</button>
+    <button class="btn btn-warning" (click)="cancel()">Cancel</button>
+  </form>
+</ng-container>

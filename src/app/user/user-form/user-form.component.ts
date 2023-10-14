@@ -5,8 +5,10 @@ import {
   FormGroup,
   Validators,
 } from '@angular/forms';
+import { Observable, map } from 'rxjs';
 
 import { User } from 'src/app/core/models/user';
+import { UserService } from 'src/app/core/services/user.service';
 
 @Component({
   selector: 'user-form',
@@ -14,21 +16,37 @@ import { User } from 'src/app/core/models/user';
   styleUrls: ['./user-form.component.scss'],
 })
 export class UserFormComponent {
-  @Output() onSave: EventEmitter<Partial<User>> = new EventEmitter();
+  @Output() onCancel: EventEmitter<boolean> = new EventEmitter();
 
-  form: FormGroup = this.initialiseForm();
+  selectedUser$: Observable<User | null> = this.userService.selectedUser$;
+  form$: Observable<FormGroup> = this.setForm();
 
-  constructor(private readonly formBuilder: FormBuilder) {}
+  constructor(
+    private readonly formBuilder: FormBuilder,
+    private readonly userService: UserService
+  ) {}
 
-  save(): void {
-    if (!this.form.valid) return;
-    this.onSave.emit(this.form.value as Partial<User>);
+  save(form: FormGroup): void {
+    if (!form.valid) return;
+    this.userService.addOrEdit(form.value as Partial<User>);
   }
 
-  private initialiseForm(): FormGroup {
+  cancel(): void {
+    this.onCancel.emit(true);
+  }
+
+  private setForm(): Observable<FormGroup> {
+    return this.selectedUser$.pipe(
+      map((user) => (user ? this.createForm(user) : this.createForm()))
+    );
+  }
+
+  private createForm(selectedUser?: User): FormGroup {
+    const { id = '', name = '', email = '' } = selectedUser || {};
     return this.formBuilder.group({
-      name: new FormControl('', Validators.required),
-      email: new FormControl('', Validators.required),
+      id: new FormControl(id),
+      name: new FormControl(name, Validators.required),
+      email: new FormControl(email, Validators.required),
     });
   }
 }
